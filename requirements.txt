@@ -5,3 +5,4 @@ sqlitedict
 kubernetes
 jinja2
 pyyaml
+pygments
