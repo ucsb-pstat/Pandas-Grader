@@ -1,0 +1,6 @@
+git+https://github.com/simon-mo/Gofer-Grader.git@plain_text_repr
+requests
+click
+ipython
+bs4
+lxml

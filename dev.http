@@ -1,0 +1,62 @@
+@access_token=pzMfqGhGn6EQYUsxK5m1tZiwptqTZB
+
+# test REST client
+GET https://okpy.org/api/v3/assignment/cal/data100/sp19/lab1/submissions?access_token={{access_token}}&limit=1 HTTP/1.1
+
+###
+
+# list assignment
+GET https://okpy.org/api/v3/course/cal/data100/sp19/assignments?access_token={{access_token}} HTTP/1.1
+
+###
+GET https://okpy.org/api/v3/backups/l5AAYJ?access_token={{access_token}} HTTP/1.1
+###
+
+GET https://okpy.org/api/v3/course/cal/data100/sp19/enrollment?access_token={{access_token}} HTTP/1.1
+###
+
+
+POST https://okpy.org/api/v3/score/?access_token={{access_token}} HTTP/1.1
+Content-Type: application/json
+
+{
+    "bid": "gLv4Ll",
+    "score": 2.0,
+    "kind": "Total",
+    "message": "!Test Autograder override, you shouldn't have seem this. If you do, email Simon"
+}
+
+
+### 
+POST http://127.0.0.1:6000/api/ok/v3/grade/batch HTTP/1.1
+Content-Type: application/json
+
+{
+    "subm_ids": ["gLv4Ll"],
+    "access_token": "{{access_token}}",
+    "assignment": "lab1.zip"
+}
+
+### 
+POST http://127.0.0.1:6000/results HTTP/1.1
+Content-Type: application/json
+
+["6c9f8262764d46e2a0709c12583f3efa"]
+
+### 
+POST http://ac98bb0b.ngrok.io/results HTTP/1.1
+Content-Type: application/json
+
+["6c9f8262764d46e2a0709c12583f3efa"]
+
+### 
+POST http://127.0.0.1:6000/api/ag/v1/skeleton/lab1.zip HTTP/1.1
+Content-Type: application/zip
+
+< /Users/simonmo/Desktop/ds100/repos/sp19-dev/dist/lab/lab01/autograder/lab1.zip
+
+### 
+GET http://127.0.0.1:6000/api/ag/v1/skeleton/lab1.zip HTTP/1.1
+
+### 
+GET http://127.0.0.1:6000/api/ag/v1/fetch_job HTTP/1.1
