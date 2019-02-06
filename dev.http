@@ -1,4 +1,4 @@
-@access_token=pzMfqGhGn6EQYUsxK5m1tZiwptqTZB
+@access_token=VxIvphKZYtlcQmenXXAowdi45DEHZf
 
 # test REST client
 GET https://okpy.org/api/v3/assignment/cal/data100/sp19/lab1/submissions?access_token={{access_token}}&limit=1 HTTP/1.1
@@ -32,7 +32,7 @@ POST http://127.0.0.1:6000/api/ok/v3/grade/batch HTTP/1.1
 Content-Type: application/json
 
 {
-    "subm_ids": ["gLv4Ll"],
+    "subm_ids": ["gLv4Ll", "ZV5B3J", "pQG5oV"],
     "access_token": "{{access_token}}",
     "assignment": "lab1.zip"
 }

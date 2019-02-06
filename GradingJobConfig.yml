@@ -4,12 +4,14 @@ metadata:
   name: {{ name }}
 spec:
   backoffLimit: 1
+  parallelism: 1
+  completions: 3
   template:
     spec:
       containers:
       - name: {{ name }}
-        image: simonmok/jhub-gofer
+        image: simonmok/jhub-gofer:latest
         command: [
           "python", "worker.py", 
-          "--api-server", "{{ api_addr }}"]
+          "--api-url", "{{ api_addr }}"]
       restartPolicy: Never
