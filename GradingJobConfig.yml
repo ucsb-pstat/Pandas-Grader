@@ -4,8 +4,8 @@ metadata:
   name: {{ name }}
 spec:
   backoffLimit: 1
-  parallelism: 1
-  completions: 3
+  parallelism: {{ parallelism }}
+  completions: {{ num_jobs }}
   template:
     spec:
       containers:

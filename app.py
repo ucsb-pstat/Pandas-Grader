@@ -166,4 +166,11 @@ async def grade_batch(request: Request):
         )
         job_ids.append(job_id)
 
+    _start_k8s_jobs("GradingJobConfig.yml", {
+        "name": f"pandas-grader-{job_id}",
+        "parallelism": 50,
+        "num_jobs": len(job_ids),
+        "api_addr": "http://52.10.157.13:8000"
+        })
+
     return JSONResponse({'jobs': [job_id for job_id in job_ids]}, background=background_job)
