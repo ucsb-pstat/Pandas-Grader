@@ -11,7 +11,7 @@ from starlette.config import Config
 from starlette.requests import Request
 from starlette.responses import JSONResponse, PlainTextResponse, Response
 
-from k8s import check_job_status, create_job_from_str, delete_job
+from k8s import create_grading_job
 from utils import pprint_color_json
 
 import logging
@@ -166,7 +166,7 @@ async def grade_batch(request: Request):
         )
         job_ids.append(job_id)
 
-    _start_k8s_jobs("GradingJobConfig.yml", {
+    create_grading_job("GradingJobConfig.yml", {
         "name": f"pandas-grader-{job_id}",
         "parallelism": 50,
         "num_jobs": len(job_ids),
