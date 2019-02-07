@@ -94,14 +94,14 @@ async def fetch_job(request: Request):
         item['status'] = 'running'
         app.db[job_id] = item
 
-        return JSONResponse(
-            {
+        spec = {
                 "queue_empty": False,
                 "skeleton": item["skeleton"],
                 "backup_id": item["backup_id"],
                 "access_token": item["access_token"],
             }
-        )
+        _debug_print_json(spec)
+        return JSONResponse(spec)
 
 
 async def kick_off_grading_job(assignment_token, submission_id, access_token, job_id):
@@ -132,7 +132,7 @@ async def check_result(request: Request):
     jobs_ids = await request.json()
     status = {}
     for job_id in jobs_ids:
-        status[job_id] = {'status': "finished"}
+        status[job_id] = {'status': "queued"}
     return JSONResponse(status)
 
 
