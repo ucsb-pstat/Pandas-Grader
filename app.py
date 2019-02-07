@@ -129,6 +129,8 @@ async def check_result(request: Request):
         examples:
           {"job_id_1": {"status": "failed"}}
     """
+    return PlainTextResponse("Fail the job!")
+
     jobs_ids = await request.json()
     status = {}
     for job_id in jobs_ids:
