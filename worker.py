@@ -14,11 +14,13 @@ GRADING_DIR = os.getcwd()
 
 def gofer_wrangle(res):
     # unique-ify the score based on path
-    path_to_score = {str(r.paths): r.grade for r in res}
-    path_to_score.update(
-        {"total": sum(path_to_score.values()), "msg": "\n".join(repr(r) for r in res)}
-    )
-    return path_to_score
+    path_to_score = {}
+    for r in res:
+        key = r.paths[0].replace('.py','')
+        path_to_score[key] = r.grade
+        path_to_score[key+"_msg"] = repr(r)
+    okpy_result = {"total": sum(path_to_score.values()), "msg": "\n".join(repr(r) for r in res)}
+    return okpy_result, path_to_score
 
 
 @click.command()
@@ -57,18 +59,18 @@ def main(api_url):
     assert len(files_to_grade) == 1, "Only support grading 1 notebook file"
 
     os.chdir(GRADING_DIR)
-    res = gofer_wrangle(gofer.ok.grade_notebook(files_to_grade[0]))
+    okpy_result, path_to_score = gofer_wrangle(gofer.ok.grade_notebook(files_to_grade[0]))
     # print(res)
-    res["bid"] = backup_id
-    res["assignment"] = skeleton_name
+    path_to_score["bid"] = backup_id
+    path_to_score["assignment"] = skeleton_name
     report_breakdown_url = f"{api_url}/api/ag/v1/report_result"
-    requests.post(report_breakdown_url, json=res)
+    requests.post(report_breakdown_url, json=path_to_score)
 
     score_content = {
         "bid": backup_id,
-        "score": res["total"],
+        "score": okpy_result["total"],
         "kind": "Total",
-        "message": res["msg"],
+        "message": okpy_result["msg"],
     }
     score_endpoint = f"https://okpy.org/api/v3/score/?access_token={access_token}"
     resp = requests.post(score_endpoint, json=score_content)
