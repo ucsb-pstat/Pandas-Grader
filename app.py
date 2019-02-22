@@ -43,6 +43,10 @@ async def shut_down():
     app.result_file.close()
 
 
+@app.route("/")
+async def index():
+    return PlainTextResponse("Welcome to DS100 autograder, please contact Simon <xmo@berkeley.edu> for usage.")
+
 # Autograder Core
 @app.route("/api/ag/v1/skeleton/{assignment}", methods=["POST", "GET"])
 async def return_zip_file(request: Request):
