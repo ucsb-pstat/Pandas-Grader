@@ -74,9 +74,10 @@ async def accept_result(request: Request):
     if request.method == "POST":
         data = await request.json()
         app.result_file.write(json.dumps(data))
+        app.result_file.write("\n")
         return PlainTextResponse("ok")
     else:
-        return FileRespone(REPORT_PATH)
+        return FileResponse(REPORT_PATH)
 
 
 @app.route("/api/ag/v1/fetch_job")
