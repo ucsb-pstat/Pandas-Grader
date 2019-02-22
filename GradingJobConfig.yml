@@ -3,7 +3,7 @@ kind: Job
 metadata:
   name: {{ name }}
 spec:
-  backoffLimit: 1
+  backoffLimit: 0
   parallelism: {{ parallelism }}
   completions: {{ num_jobs }}
   template:

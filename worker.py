@@ -1,4 +1,5 @@
 import logging
+import traceback
 import os
 import subprocess
 import zipfile
@@ -8,11 +9,13 @@ import requests
 
 import gofer.ok
 
-GRADING_DIR = "grading"
+GRADING_DIR = os.getcwd()
 
 
 def gofer_wrangle(res):
-    return {"total": sum(r.grade for r in res), "msg": "\n".join(repr(r) for r in res)}
+    # unique-ify the score based on path
+    path_to_score = {str(r.paths): r.grade for r in res}
+    return {"total": sum(path_to_score.values()), "msg": "\n".join(repr(r) for r in res)}
 
 
 @click.command()
@@ -22,10 +25,11 @@ def main(api_url):
     if fetched["queue_empty"]:
         logging.error("Request queue is empty, no work to do, quitting")
         return 1
+    print(fetched)
     skeleton_name = fetched["skeleton"]
     skeleton_zip = requests.get(f"{api_url}/api/ag/v1/skeleton/{skeleton_name}")
 
-    os.makedirs(GRADING_DIR)
+    os.makedirs(GRADING_DIR, exist_ok=True)
     with open(f"{GRADING_DIR}/{skeleton_name}", "wb") as f:
         f.write(skeleton_zip.content)
 
@@ -51,6 +55,7 @@ def main(api_url):
 
     os.chdir(GRADING_DIR)
     res = gofer_wrangle(gofer.ok.grade_notebook(files_to_grade[0]))
+    print(res)
     score_content = {
         "bid": backup_id,
         "score": res["total"],
@@ -63,4 +68,8 @@ def main(api_url):
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except Exception as e:
+        traceback.print_exc()
+
