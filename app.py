@@ -17,7 +17,7 @@ from utils import pprint_color_json
 
 config = Config(".env")
 DB_PATH = config("DB_PATH", default="kv.db")
-DEBUG = config("DEBUG", cast=bool, default=True)
+DEBUG = config("DEBUG", cast=bool, default=False)
 REPORT_PATH = "result.jsonl"
 
 app = Starlette(debug=DEBUG)
