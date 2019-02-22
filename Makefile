@@ -6,3 +6,7 @@ build:
 
 push: build
 	docker push simonmok/jhub-gofer:latest
+
+format:
+	isort *.py
+	black .

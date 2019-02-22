@@ -1,7 +1,8 @@
-from kubernetes import client, config
 from time import sleep
-import yaml
+
 import jinja2
+import yaml
+from kubernetes import client, config
 
 config.load_kube_config()
 api_client = client.ApiClient()
@@ -63,7 +64,9 @@ if __name__ == "__main__":
     with open("GradingJobConfig.yml", "r") as f:
         raw_str = f.read()
         tmpl = jinja2.Template(raw_str)
-        create_job_from_str(tmpl.render(name=name, api_addr="http://8206e840.ngrok.io"), namespace)
+        create_job_from_str(
+            tmpl.render(name=name, api_addr="http://8206e840.ngrok.io"), namespace
+        )
 
     # status, log = False, ""
     # while status == False:

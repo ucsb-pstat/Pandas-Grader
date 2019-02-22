@@ -1,6 +1,7 @@
+import json
+import logging
 import os
 from uuid import uuid4
-import json
 
 import requests
 import uvicorn
@@ -9,12 +10,10 @@ from starlette.applications import Starlette
 from starlette.background import BackgroundTasks
 from starlette.config import Config
 from starlette.requests import Request
-from starlette.responses import JSONResponse, PlainTextResponse, Response, FileRespone
+from starlette.responses import FileRespone, JSONResponse, PlainTextResponse, Response
 
 from k8s import create_grading_job
 from utils import pprint_color_json
-
-import logging
 
 config = Config(".env")
 DB_PATH = config("DB_PATH", default="kv.db")
@@ -35,7 +34,8 @@ def _debug_print_json(json):
 async def start_up():
     app.db = SqliteDict(DB_PATH, autocommit=True, tablename="grading")
     app.db["job_queue"] = []
-    app.result_file = open(REPORT_PATH,'w')
+    app.result_file = open(REPORT_PATH, "w")
+
 
 @app.on_event("shutdown")
 async def shut_down():
@@ -45,7 +45,10 @@ async def shut_down():
 
 @app.route("/")
 async def index():
-    return PlainTextResponse("Welcome to DS100 autograder, please contact Simon <xmo@berkeley.edu> for usage.")
+    return PlainTextResponse(
+        "Welcome to DS100 autograder, please contact Simon <xmo@berkeley.edu> for usage."
+    )
+
 
 # Autograder Core
 @app.route("/api/ag/v1/skeleton/{assignment}", methods=["POST", "GET"])
@@ -65,6 +68,7 @@ async def return_zip_file(request: Request):
         app.db[key] = {"body": body, "media_type": media_type}
         return JSONResponse({"success": True})
 
+
 @app.route("/api/ag/v1/report_result", methods=["POST", "GET"])
 async def accept_result(request: Request):
     if request.method == "POST":
@@ -73,6 +77,7 @@ async def accept_result(request: Request):
         return PlainTextResponse("ok")
     else:
         return FileRespone(REPORT_PATH)
+
 
 @app.route("/api/ag/v1/fetch_job")
 async def fetch_job(request: Request):
@@ -103,26 +108,26 @@ async def fetch_job(request: Request):
         app.db["job_queue"] = jobs_queued
 
         item = app.db[job_id]
-        item['status'] = 'running'
+        item["status"] = "running"
         app.db[job_id] = item
 
         spec = {
-                "queue_empty": False,
-                "skeleton": item["skeleton"],
-                "backup_id": item["backup_id"],
-                "access_token": item["access_token"],
-            }
+            "queue_empty": False,
+            "skeleton": item["skeleton"],
+            "backup_id": item["backup_id"],
+            "access_token": item["access_token"],
+        }
         _debug_print_json(spec)
         return JSONResponse(spec)
 
 
 async def kick_off_grading_job(assignment_token, submission_id, access_token, job_id):
     app.db[job_id] = {
-        'skeleton': assignment_token,
-        'backup_id': submission_id,
-        'access_token': access_token,
-        'job_id': job_id,
-        'status': 'queued'
+        "skeleton": assignment_token,
+        "backup_id": submission_id,
+        "access_token": access_token,
+        "job_id": job_id,
+        "status": "queued",
     }
 
     jobs_queued = app.db["job_queue"]
@@ -130,9 +135,8 @@ async def kick_off_grading_job(assignment_token, submission_id, access_token, jo
     app.db["job_queue"] = jobs_queued
 
 
-
 # Okpy Frontend
-@app.route("/results", methods=['POST'])
+@app.route("/results", methods=["POST"])
 async def check_result(request: Request):
     """
     responses:
@@ -180,11 +184,16 @@ async def grade_batch(request: Request):
         )
         job_ids.append(job_id)
 
-    create_grading_job("GradingJobConfig.yml", {
-        "name": f"pandas-grader-{job_id}",
-        "parallelism": 50,
-        "num_jobs": len(job_ids),
-        "api_addr": "http://52.10.157.13:8000"
-        })
+    create_grading_job(
+        "GradingJobConfig.yml",
+        {
+            "name": f"pandas-grader-{job_id}",
+            "parallelism": 50,
+            "num_jobs": len(job_ids),
+            "api_addr": "http://52.10.157.13:8000",
+        },
+    )
 
-    return JSONResponse({'jobs': [job_id for job_id in job_ids]}, background=background_job)
+    return JSONResponse(
+        {"jobs": [job_id for job_id in job_ids]}, background=background_job
+    )

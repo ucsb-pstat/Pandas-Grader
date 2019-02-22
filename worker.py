@@ -1,7 +1,7 @@
 import logging
-import traceback
 import os
 import subprocess
+import traceback
 import zipfile
 
 import click
@@ -15,10 +15,9 @@ GRADING_DIR = os.getcwd()
 def gofer_wrangle(res):
     # unique-ify the score based on path
     path_to_score = {str(r.paths): r.grade for r in res}
-    path_to_score.update({
-        "total": sum(path_to_score.values()),
-        "msg": "\n".join(repr(r) for r in res),
-    })
+    path_to_score.update(
+        {"total": sum(path_to_score.values()), "msg": "\n".join(repr(r) for r in res)}
+    )
     return path_to_score
 
 
@@ -81,4 +80,3 @@ if __name__ == "__main__":
         main()
     except Exception as e:
         traceback.print_exc()
-
