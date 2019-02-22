@@ -10,7 +10,7 @@ from starlette.applications import Starlette
 from starlette.background import BackgroundTasks
 from starlette.config import Config
 from starlette.requests import Request
-from starlette.responses import FileRespone, JSONResponse, PlainTextResponse, Response
+from starlette.responses import FileResponse, JSONResponse, PlainTextResponse, Response
 
 from k8s import create_grading_job
 from utils import pprint_color_json
@@ -44,7 +44,7 @@ async def shut_down():
 
 
 @app.route("/")
-async def index():
+async def index(request):
     return PlainTextResponse(
         "Welcome to DS100 autograder, please contact Simon <xmo@berkeley.edu> for usage."
     )
