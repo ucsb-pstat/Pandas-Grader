@@ -1,6 +1,6 @@
 import os
-from concurrent.futures import ThreadPoolExecutor
 from uuid import uuid4
+import json
 
 import requests
 import uvicorn
@@ -9,7 +9,7 @@ from starlette.applications import Starlette
 from starlette.background import BackgroundTasks
 from starlette.config import Config
 from starlette.requests import Request
-from starlette.responses import JSONResponse, PlainTextResponse, Response
+from starlette.responses import JSONResponse, PlainTextResponse, Response, FileRespone
 
 from k8s import create_grading_job
 from utils import pprint_color_json
@@ -19,10 +19,10 @@ import logging
 config = Config(".env")
 DB_PATH = config("DB_PATH", default="kv.db")
 DEBUG = config("DEBUG", cast=bool, default=True)
+REPORT_PATH = "result.jsonl"
 
 app = Starlette(debug=DEBUG)
 app.db: SqliteDict = None
-app.executor: ThreadPoolExecutor = None
 app.worker_queue: dict = None
 
 
@@ -34,13 +34,13 @@ def _debug_print_json(json):
 @app.on_event("startup")
 async def start_up():
     app.db = SqliteDict(DB_PATH, autocommit=True, tablename="grading")
-    app.executor = ThreadPoolExecutor(max_workers=4)
     app.db["job_queue"] = []
+    app.result_file = open(REPORT_PATH,'w')
 
 @app.on_event("shutdown")
 async def shut_down():
     app.db.close()
-    app.executor.shutdown()
+    app.result_file.close()
 
 
 # Autograder Core
@@ -61,6 +61,14 @@ async def return_zip_file(request: Request):
         app.db[key] = {"body": body, "media_type": media_type}
         return JSONResponse({"success": True})
 
+@app.route("/api/ag/v1/report_result", methods=["POST", "GET"])
+async def accept_result(request: Request):
+    if request.method == "POST":
+        data = await request.json()
+        app.result_file.write(json.dumps(data))
+        return PlainTextResponse("ok")
+    else:
+        return FileRespone(REPORT_PATH)
 
 @app.route("/api/ag/v1/fetch_job")
 async def fetch_job(request: Request):
@@ -112,7 +120,7 @@ async def kick_off_grading_job(assignment_token, submission_id, access_token, jo
         'job_id': job_id,
         'status': 'queued'
     }
-    
+
     jobs_queued = app.db["job_queue"]
     jobs_queued.append(job_id)
     app.db["job_queue"] = jobs_queued
@@ -131,11 +139,11 @@ async def check_result(request: Request):
     """
     return PlainTextResponse("Fail the job!")
 
-    jobs_ids = await request.json()
-    status = {}
-    for job_id in jobs_ids:
-        status[job_id] = {'status': "queued"}
-    return JSONResponse(status)
+    # jobs_ids = await request.json()
+    # status = {}
+    # for job_id in jobs_ids:
+    #     status[job_id] = {'status': "queued"}
+    # return JSONResponse(status)
 
 
 @app.route("/api/ok/v3/grade/batch", methods=["POST"])

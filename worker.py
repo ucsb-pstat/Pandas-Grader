@@ -15,7 +15,11 @@ GRADING_DIR = os.getcwd()
 def gofer_wrangle(res):
     # unique-ify the score based on path
     path_to_score = {str(r.paths): r.grade for r in res}
-    return {"total": sum(path_to_score.values()), "msg": "\n".join(repr(r) for r in res)}
+    path_to_score.update({
+        "total": sum(path_to_score.values()),
+        "msg": "\n".join(repr(r) for r in res),
+    })
+    return path_to_score
 
 
 @click.command()
@@ -55,7 +59,12 @@ def main(api_url):
 
     os.chdir(GRADING_DIR)
     res = gofer_wrangle(gofer.ok.grade_notebook(files_to_grade[0]))
-    print(res)
+    # print(res)
+    res["bid"] = backup_id
+    res["assignment"] = skeleton_name
+    report_breakdown_url = f"{api_url}/api/ag/v1/report_result"
+    requests.post(report_breakdown_url, json=res)
+
     score_content = {
         "bid": backup_id,
         "score": res["total"],
