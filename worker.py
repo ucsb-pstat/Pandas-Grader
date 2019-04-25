@@ -18,7 +18,6 @@ def gofer_wrangle(res):
     for r in res:
         key = r.paths[0].replace('.py','')
         path_to_score[key] = r.grade
-        path_to_score[key+"_msg"] = repr(r)
     okpy_result = {"total": sum(path_to_score.values()), "msg": "\n".join(repr(r) for r in res)}
     return okpy_result, path_to_score
 
