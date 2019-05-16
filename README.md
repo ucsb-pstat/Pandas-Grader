@@ -42,9 +42,14 @@ snap start docker
     ` sudo apt install python3-pip`
 * git
     `sudo apt install git`
+    
 1. Link /usr/bin/python with /usr/bin/python3
-`sudo update-alternatives --install /usr/bin/python python /usr/bin/python3 10`
+
+```
+sudo update-alternatives --install /usr/bin/python python /usr/bin/python3 10`
+```
 1. Install python modules in requirments.txt file
+
 `pip3 install -r requirements.txt`
 
 1. Restart your shell to update your environment
