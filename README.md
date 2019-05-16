@@ -28,7 +28,7 @@ Pandas Grader
 1. Install the following packages on the grader instance
 	* docker
 
-```
+```bash
 snap install docker
 snap start docker
 ```
