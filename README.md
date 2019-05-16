@@ -26,23 +26,21 @@ Pandas Grader
 1. Create ingress rule for port 8000 ( Limit the source ips to a small list )
 
 1. Install the following packages on the grader instance
-	* docker
+* docker
 
-```bash
+```
 snap install docker
 snap start docker
 ```
-
-	* python3.6
-		* Verify version of Python
-
+* python3.6
+	* Verify version of Python
 ```
  python --version
 ```
-	* pip3
+* pip3
     ` sudo apt update`
     ` sudo apt install python3-pip`
-    * git
+* git
     `sudo apt install git`
 1. Link /usr/bin/python with /usr/bin/python3
 `sudo update-alternatives --install /usr/bin/python python /usr/bin/python3 10`
