@@ -27,15 +27,18 @@ Pandas Grader
 
 1. Install the following packages on the grader instance
 	* docker
-  ```
-    	snap install docker
-      snap start docker
-  ```
+
+```
+snap install docker
+snap start docker
+```
+
 	* python3.6
 		* Verify version of Python
-  ```
-		 python --version
-  ```
+
+```
+ python --version
+```
 	* pip3
     ` sudo apt update`
     ` sudo apt install python3-pip`
