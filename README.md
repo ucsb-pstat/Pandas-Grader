@@ -135,7 +135,7 @@
 </li>
 <li>
 <p>Create Service account that will run the autograder<br>
-<code>gcloud iam service-accounts create grader --display-name "Autograder Service Account"</code></p>
+<code>gcloud iam service-accounts create autograder --display-name "Autograder Service Account"</code></p>
 </li>
 <li>
 <p>Verify and note the name of the new account<br>
