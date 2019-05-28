@@ -21,7 +21,6 @@ def gofer_wrangle(res):
         if key not in path_to_score:
             total_score += r.grade
         path_to_score[key] = r.grade
-        path_to_score[key+"_msg"] = repr(r)
     okpy_result = {"total": total_score, "msg": "\n".join(repr(r) for r in res)}
     return okpy_result, path_to_score
 
