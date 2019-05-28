@@ -22,7 +22,7 @@ REPORT_PATH = "result.jsonl"
 
 app = Starlette(debug=DEBUG)
 app.db: SqliteDict = None
-app.worker_queue: dict = None
+app.job_queue = list()
 
 
 def _debug_print_json(json):
@@ -33,15 +33,10 @@ def _debug_print_json(json):
 @app.on_event("startup")
 async def start_up():
     app.db = SqliteDict(DB_PATH, autocommit=True, tablename="grading")
-    app.db["job_queue"] = []
-    app.result_file = open(REPORT_PATH, "w")
-
 
 @app.on_event("shutdown")
 async def shut_down():
     app.db.close()
-    app.result_file.close()
-
 
 @app.route("/")
 async def index(request):
@@ -71,13 +66,14 @@ async def return_zip_file(request: Request):
 
 @app.route("/api/ag/v1/report_result", methods=["POST", "GET"])
 async def accept_result(request: Request):
-    if request.method == "POST":
-        data = await request.json()
-        app.result_file.write(json.dumps(data))
-        app.result_file.write("\n")
-        return PlainTextResponse("ok")
-    else:
-        return FileResponse(REPORT_PATH)
+    return PlainTextResponse("ok")
+    # if request.method == "POST":
+        # data = await request.json()
+        # app.result_file.write(json.dumps(data))
+        # app.result_file.write("\n")
+        # return PlainTextResponse("ok")
+    # else:
+        # return FileResponse(REPORT_PATH)
 
 
 @app.route("/api/ag/v1/fetch_job")
@@ -100,40 +96,32 @@ async def fetch_job(request: Request):
               "queue_empty": true
           }
     """
-    jobs_queued = app.db["job_queue"]
+    jobs_queued = app.job_queue
 
     if len(jobs_queued) == 0:
         return JSONResponse({"queue_empty": True})
     else:
-        job_id = jobs_queued.pop(0)
-        app.db["job_queue"] = jobs_queued
-
-        item = app.db[job_id]
-        item["status"] = "running"
-        app.db[job_id] = item
+        job_data = jobs_queued.pop(0)
 
         spec = {
             "queue_empty": False,
-            "skeleton": item["skeleton"],
-            "backup_id": item["backup_id"],
-            "access_token": item["access_token"],
+            "skeleton": job_data["skeleton"],
+            "backup_id": job_data["backup_id"],
+            "access_token": job_data["access_token"],
         }
         _debug_print_json(spec)
         return JSONResponse(spec)
 
 
 async def kick_off_grading_job(assignment_token, submission_id, access_token, job_id):
-    app.db[job_id] = {
+    data = {
         "skeleton": assignment_token,
         "backup_id": submission_id,
         "access_token": access_token,
         "job_id": job_id,
         "status": "queued",
     }
-
-    jobs_queued = app.db["job_queue"]
-    jobs_queued.append(job_id)
-    app.db["job_queue"] = jobs_queued
+    app.job_queue.append(data)
 
 
 # Okpy Frontend
@@ -189,7 +177,7 @@ async def grade_batch(request: Request):
         "GradingJobConfig.yml",
         {
             "name": f"pandas-grader-{job_id}",
-            "parallelism": 50,
+            "parallelism": 1000,
             "num_jobs": len(job_ids),
             "api_addr": "http://52.10.157.13:8000",
         },
