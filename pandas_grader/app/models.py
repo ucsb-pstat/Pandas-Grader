@@ -36,6 +36,14 @@ class JobStatusEnum(enum.Enum):
     FINISHED = "FINISHED"
 
 
+def translate_okpy_status(status):
+    return {
+        "JobStatusEnum.QUEUED": "queued",
+        "JobStatusEnum.DONE": "finished",
+        "JobStatusEnum.RUNNING": "running",
+    }[status]
+
+
 class GradingJob(models.Model):
     job_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 
@@ -53,6 +61,9 @@ class GradingJob(models.Model):
     enqueued_time = models.DateTimeField(default=timezone.now)
     dequeue_time = models.DateTimeField(null=True)
     finish_time = models.DateTimeField(null=True)
+
+    def __str__(self):
+        return f"{self.assignment.name}-{self.backup_id}"
 
     def dequeue(self):
         self.dequeue_time = timezone.now()

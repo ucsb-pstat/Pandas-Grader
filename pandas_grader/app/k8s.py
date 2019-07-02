@@ -25,7 +25,7 @@ def deploy_jobs(kwargs, namespace):
 
     tmpl = jinja2.Template(raw_str)
     rendered = tmpl.render(**kwargs)
-    rendered_yml = yaml.load(rendered)
+    rendered_yml = yaml.safe_load(rendered)
 
     job_api.create_namespaced_job(namespace, rendered_yml)
 

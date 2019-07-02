@@ -3,7 +3,7 @@ from django.http import HttpRequest, HttpResponse, JsonResponse, FileResponse
 from django.views.decorators.http import require_POST
 import json
 from constance import config
-from .models import Assignment, GradingJob, JobStatusEnum
+from .models import Assignment, GradingJob, JobStatusEnum, translate_okpy_status
 from django.db import transaction
 from .k8s import add_k_workers
 
@@ -30,6 +30,11 @@ def grade_batch(request: HttpRequest):
 
     add_k_workers(len(backup_ids))
 
+    # TODO(simon):
+    # Address the issue of queue backpresssure:
+    # specifically, okpy has a short retry period.
+    # we need to check if the backup_id is already in queue
+    # to avoid creating another task
     job_ids = []
     for backup_id in backup_ids:
         job = GradingJob(
@@ -49,7 +54,7 @@ def check_result(request):
     for job_id in jobs_ids:
         job = GradingJob.objects.get(job_id=job_id)
         # str.split is used to normalized enum name
-        status[job_id] = {"status": job.status.split(".")[-1]}
+        status[job_id] = {"status": translate_okpy_status(job.status)}
     return JsonResponse(status)
 
 
@@ -69,6 +74,7 @@ def fetch_job(request):
                 "skeleton": next_job.assignment.assignment_id,
                 "backup_id": next_job.backup_id,
                 "access_token": next_job.access_token,
+                "job_id": next_job.job_id,
             }
         )
 
@@ -76,3 +82,12 @@ def fetch_job(request):
 def get_file(request: HttpRequest, assignment_id):
     file = _get_assignment(assignment_id).file
     return FileResponse(file)
+
+
+@require_POST
+def report_done(request: HttpRequest, job_id):
+    query = GradingJob.objects.filter(job_id=job_id)
+    result = get_object_or_404(query)
+    result.done()
+    result.save()
+    return HttpResponse(status=200)

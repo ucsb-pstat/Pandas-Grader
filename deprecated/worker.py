@@ -46,6 +46,7 @@ def main(api_url):
 
     access_token = fetched["access_token"]
     backup_id = fetched["backup_id"]
+    job_id = fetched["job_id"]
     backup_assignment_url = (
         f"https://okpy.org/api/v3/backups/{backup_id}?access_token={access_token}"
     )
@@ -79,6 +80,10 @@ def main(api_url):
     score_endpoint = f"https://okpy.org/api/v3/score/?access_token={access_token}"
     resp = requests.post(score_endpoint, json=score_content)
     assert resp.status_code == 200, resp.json()
+
+    report_done_endpoint = f"{api_url}/api/ag/v1/report_done/{job_id}"
+    resp = requests.post(report_done_endpoint)
+    assert resp.status_code == 200
 
 
 if __name__ == "__main__":
