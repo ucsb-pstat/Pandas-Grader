@@ -1,0 +1,8 @@
+requests
+uvicorn
+starlette
+sqlitedict
+kubernetes
+jinja2
+pyyaml
+pygments

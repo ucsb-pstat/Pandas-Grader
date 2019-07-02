@@ -17,7 +17,7 @@ def gofer_wrangle(res):
     path_to_score = {}
     total_score = 0
     for r in res:
-        key = r.paths[0].replace('.py','')
+        key = r.paths[0].replace(".py", "")
         if key not in path_to_score:
             total_score += r.grade
         path_to_score[key] = r.grade
@@ -37,7 +37,7 @@ def main(api_url):
     skeleton_zip = requests.get(f"{api_url}/api/ag/v1/skeleton/{skeleton_name}")
 
     os.makedirs(GRADING_DIR, exist_ok=True)
-    with open(f"{GRADING_DIR}/{skeleton_name}", "wb") as f:
+    with open(f"{GRADING_DIR}/{skeleton_name}.zip", "wb") as f:
         f.write(skeleton_zip.content)
 
     proc = subprocess.Popen(["unzip", skeleton_name], cwd=GRADING_DIR)
@@ -61,7 +61,9 @@ def main(api_url):
     assert len(files_to_grade) == 1, "Only support grading 1 notebook file"
 
     os.chdir(GRADING_DIR)
-    okpy_result, path_to_score = gofer_wrangle(gofer.ok.grade_notebook(files_to_grade[0]))
+    okpy_result, path_to_score = gofer_wrangle(
+        gofer.ok.grade_notebook(files_to_grade[0])
+    )
     # print(res)
     path_to_score["bid"] = backup_id
     path_to_score["assignment"] = skeleton_name

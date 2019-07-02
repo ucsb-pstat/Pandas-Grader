@@ -2,3 +2,6 @@ __pycache__/
 .vscode/
 *.db
 *.http
+uploads/
+__pycache__
+*.sqlite3

@@ -1,0 +1,23 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ name }}
+spec:
+  backoffLimit: 0
+  parallelism: {{ parallelism }}
+  completions: {{ num_jobs }}
+  template:
+    spec:
+      containers:
+      - name: {{ name }}
+        image: simonmok/jhub-gofer:latest
+        command: [
+          "python", "worker.py", 
+          "--api-url", "{{ api_addr }}"]
+      restartPolicy: Never
+      imagePullPolicy: Always
+      resources:
+        requests:
+          memory: "2G"
+        limits:
+          memory: "4G"

@@ -1,8 +1,2 @@
-requests
-uvicorn
-starlette
-sqlitedict
-kubernetes
-jinja2
-pyyaml
-pygments
+django
+django-constance[database]

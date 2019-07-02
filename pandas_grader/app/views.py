@@ -1,0 +1,78 @@
+from django.shortcuts import render, redirect, get_object_or_404
+from django.http import HttpRequest, HttpResponse, JsonResponse, FileResponse
+from django.views.decorators.http import require_POST
+import json
+from constance import config
+from .models import Assignment, GradingJob, JobStatusEnum
+from django.db import transaction
+from .k8s import add_k_workers
+
+
+def index(request: HttpRequest):
+    return redirect("admin:index")
+
+
+def _get_assignment(file_id):
+    query = Assignment.objects.filter(assignment_id=file_id)
+    result = get_object_or_404(query)
+    return result
+
+
+@require_POST
+@transaction.atomic
+def grade_batch(request: HttpRequest):
+    req_data = json.loads(request.body)
+    access_token = req_data["access_token"]
+    backup_ids = req_data["subm_ids"]
+
+    assignment_key = req_data["assignment"]
+    assignment = _get_assignment(assignment_key)
+
+    add_k_workers(len(backup_ids))
+
+    job_ids = []
+    for backup_id in backup_ids:
+        job = GradingJob(
+            assignment=assignment, backup_id=backup_id, access_token=access_token
+        )
+        job.save()
+
+        job_ids.append(job.job_id)
+
+    return JsonResponse({"jobs": job_ids})
+
+
+@require_POST
+def check_result(request):
+    jobs_ids = json.loads(request.body)
+    status = {}
+    for job_id in jobs_ids:
+        job = GradingJob.objects.get(job_id=job_id)
+        # str.split is used to normalized enum name
+        status[job_id] = {"status": job.status.split(".")[-1]}
+    return JsonResponse(status)
+
+
+def fetch_job(request):
+    queued_jobs = GradingJob.objects.filter(status=JobStatusEnum.QUEUED).order_by(
+        "enqueued_time"
+    )
+    if len(queued_jobs) == 0:
+        return JsonResponse({"queue_empty": True})
+    else:
+        next_job = queued_jobs[0]
+        next_job.dequeue()
+        next_job.save()
+        return JsonResponse(
+            {
+                "queue_empty": False,
+                "skeleton": next_job.assignment.assignment_id,
+                "backup_id": next_job.backup_id,
+                "access_token": next_job.access_token,
+            }
+        )
+
+
+def get_file(request: HttpRequest, assignment_id):
+    file = _get_assignment(assignment_id).file
+    return FileResponse(file)

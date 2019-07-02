@@ -1,0 +1,63 @@
+from django.db import models
+import uuid
+import enum
+from django.utils import timezone
+
+
+def get_file_path(instance, filename: str):
+    return f"uploads/{instance.name}/{instance.assignment_id}/{filename}"
+
+
+# Create your models here.
+class Assignment(models.Model):
+    assignment_id = models.UUIDField(
+        primary_key=True,
+        default=uuid.uuid4,
+        editable=False,
+        help_text="Use thie field as okpy's autograder_key",
+    )
+
+    name = models.CharField(max_length=20)
+    last_updated = models.DateTimeField(default=timezone.now)
+    file = models.FileField(
+        upload_to=get_file_path, help_text="Please upload a zip file!"
+    )
+
+    def __str__(self):
+        return f"{self.name}/{self.assignment_id}"
+
+
+class JobStatusEnum(enum.Enum):
+    QUEUED = "QUEUED"
+    DONE = "DONE"
+    RUNNING = "RUNNING"
+
+    # deprecated
+    FINISHED = "FINISHED"
+
+
+class GradingJob(models.Model):
+    job_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+
+    # constructor fields
+    assignment = models.ForeignKey(Assignment, on_delete=models.DO_NOTHING)
+    backup_id = models.CharField(max_length=10)
+    access_token = models.CharField(max_length=50)
+
+    # automatic metadata
+    status = models.CharField(
+        max_length=10,
+        choices=[(tag, tag.value) for tag in JobStatusEnum],
+        default=JobStatusEnum.QUEUED,
+    )
+    enqueued_time = models.DateTimeField(default=timezone.now)
+    dequeue_time = models.DateTimeField(null=True)
+    finish_time = models.DateTimeField(null=True)
+
+    def dequeue(self):
+        self.dequeue_time = timezone.now()
+        self.status = JobStatusEnum.RUNNING
+
+    def done(self):
+        self.finish_time = timezone.now()
+        self.status = JobStatusEnum.DONE

@@ -34,9 +34,11 @@ def _debug_print_json(json):
 async def start_up():
     app.db = SqliteDict(DB_PATH, autocommit=True, tablename="grading")
 
+
 @app.on_event("shutdown")
 async def shut_down():
     app.db.close()
+
 
 @app.route("/")
 async def index(request):
@@ -68,12 +70,12 @@ async def return_zip_file(request: Request):
 async def accept_result(request: Request):
     return PlainTextResponse("ok")
     # if request.method == "POST":
-        # data = await request.json()
-        # app.result_file.write(json.dumps(data))
-        # app.result_file.write("\n")
-        # return PlainTextResponse("ok")
+    # data = await request.json()
+    # app.result_file.write(json.dumps(data))
+    # app.result_file.write("\n")
+    # return PlainTextResponse("ok")
     # else:
-        # return FileResponse(REPORT_PATH)
+    # return FileResponse(REPORT_PATH)
 
 
 @app.route("/api/ag/v1/fetch_job")
