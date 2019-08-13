@@ -2,12 +2,28 @@ from django.contrib import admin
 from django.utils.html import format_html
 from django.urls import reverse
 from . import models
+from django.db import transaction
 
 
 @admin.register(models.Assignment)
 class AssignmentInline(admin.ModelAdmin):
     model = models.Assignment
     readonly_fields = ("assignment_id",)
+
+
+@transaction.atomic
+def drain_grading_queue(modeladmin, request, queryset):
+    queued_jobs = models.GradingJob.objects.filter(
+        status=models.JobStatusEnum.QUEUED
+    ).order_by("enqueued_time")
+    for job in queued_jobs:
+        job.done()
+        job.save()
+
+
+drain_grading_queue.short_description = "Drain {} queued jobs".format(
+    len(models.GradingJob.objects.filter(status=models.JobStatusEnum.QUEUED))
+)
 
 
 @admin.register(models.GradingJob)
@@ -28,6 +44,7 @@ class GradingJobAdmin(admin.ModelAdmin):
     date_hierarchy = "finish_time"
     list_filter = ["assignment"]
     search_fields = ["backup_id"]
+    actions = [drain_grading_queue]
 
     # TODO: add a link here to view log html
     def show_log_url(self, obj):
