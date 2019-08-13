@@ -3,6 +3,7 @@ from django.utils.html import format_html
 from django.urls import reverse
 from . import models
 from django.db import transaction
+from django.http import HttpResponse
 
 
 @admin.register(models.Assignment)
@@ -19,11 +20,10 @@ def drain_grading_queue(modeladmin, request, queryset):
     for job in queued_jobs:
         job.done()
         job.save()
+    return HttpResponse("{} Jobs trained".format(len(queued_jobs)))
 
 
-drain_grading_queue.short_description = "Drain {} queued jobs".format(
-    len(models.GradingJob.objects.filter(status=models.JobStatusEnum.QUEUED))
-)
+drain_grading_queue.short_description = "Drain queued jobs"
 
 
 @admin.register(models.GradingJob)
