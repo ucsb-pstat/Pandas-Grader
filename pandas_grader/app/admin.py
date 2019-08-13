@@ -20,7 +20,7 @@ def drain_grading_queue(modeladmin, request, queryset):
     for job in queued_jobs:
         job.done()
         job.save()
-    return HttpResponse("{} Jobs trained".format(len(queued_jobs)))
+    return HttpResponse("{} Jobs drained".format(len(queued_jobs)))
 
 
 drain_grading_queue.short_description = "Drain queued jobs"
