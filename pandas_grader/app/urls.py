@@ -9,4 +9,5 @@ urlpatterns = [
     path("api/ag/v1/fetch_job", views.fetch_job),
     path("api/ag/v1/skeleton/<uuid:assignment_id>", views.get_file),
     path("api/ag/v1/report_done/<uuid:job_id>", views.report_done),
+    path("api/ag/v1/get_job_log/<uuid:job_id>", views.get_job_log, name="get_job_log"),
 ]

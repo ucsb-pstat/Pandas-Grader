@@ -2,10 +2,11 @@ from django.db import models
 import uuid
 import enum
 from django.utils import timezone
+import time
 
 
 def get_file_path(instance, filename: str):
-    return f"uploads/{instance.name}/{instance.assignment_id}/{filename}"
+    return f"uploads/{instance.name}/{instance.assignment_id}/{time.time()}-{filename}"
 
 
 # Create your models here.
@@ -61,6 +62,9 @@ class GradingJob(models.Model):
     enqueued_time = models.DateTimeField(default=timezone.now)
     dequeue_time = models.DateTimeField(null=True)
     finish_time = models.DateTimeField(null=True)
+
+    # post hoc data
+    log_html = models.TextField(null=True)
 
     def __str__(self):
         return f"{self.assignment.name}-{self.backup_id}"

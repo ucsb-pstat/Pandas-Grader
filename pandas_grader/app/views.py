@@ -88,6 +88,15 @@ def get_file(request: HttpRequest, assignment_id):
 def report_done(request: HttpRequest, job_id):
     query = GradingJob.objects.filter(job_id=job_id)
     result = get_object_or_404(query)
+
     result.done()
+    result.log_html = request.body.decode()
+
     result.save()
     return HttpResponse(status=200)
+
+
+def get_job_log(request: HttpRequest, job_id):
+    query = GradingJob.objects.filter(job_id=job_id)
+    result = get_object_or_404(query)
+    return HttpResponse(result.log_html)
