@@ -10,7 +10,7 @@ spec:
     spec:
       containers:
       - name: {{ name }}
-        image: simonmok/jhub-gofer:latest
+        image: wwhuang/jhub-gofer:latest
         command: [
           "python", "worker.py", 
           "--api-url", "{{ api_addr }}"]
