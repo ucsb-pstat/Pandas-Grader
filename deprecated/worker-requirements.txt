@@ -1,4 +1,4 @@
-git+https://github.com/simon-mo/Gofer-Grader.git@plain_text_repr
+git+https://github.com/DS-100/Gofer-Grader.git@plain_text_repr
 requests
 click
 ipython
