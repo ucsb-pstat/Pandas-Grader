@@ -65,7 +65,7 @@ if __name__ == "__main__":
         raw_str = f.read()
         tmpl = jinja2.Template(raw_str)
         create_job_from_str(
-            tmpl.render(name=name, api_addr="http://a5e2eb96.ngrok.io/"), namespace
+            tmpl.render(name=name, api_addr="http://a5e2eb96.ngrok.io"), namespace
         )
 
     # status, log = False, ""
