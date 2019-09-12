@@ -71,15 +71,13 @@ def fetch_job(request):
         next_job.save()
         print("fetch has job")
         print(next_job)
-        j = JsonResponse(
-            {
+        j = {
                 "queue_empty": False,
                 "skeleton": next_job.assignment.assignment_id,
                 "backup_id": next_job.backup_id,
                 "access_token": next_job.access_token,
                 "job_id": next_job.job_id,
             }
-        )
         print(j)
         print("fetch done")
 
