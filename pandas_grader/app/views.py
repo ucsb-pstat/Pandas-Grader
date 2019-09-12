@@ -81,7 +81,7 @@ def fetch_job(request):
             }
         )
         print(j)
-        print(fetch done)
+        print("fetch done")
 
         return JsonResponse(
             {
