@@ -63,11 +63,14 @@ def fetch_job(request):
         "enqueued_time"
     )
     if len(queued_jobs) == 0:
+        print("empty queue")
         return JsonResponse({"queue_empty": True})
     else:
         next_job = queued_jobs[0]
         next_job.dequeue()
         next_job.save()
+        print("fetch has job")
+        print(next_job)
         return JsonResponse(
             {
                 "queue_empty": False,
@@ -93,6 +96,8 @@ def report_done(request: HttpRequest, job_id):
     result.log_html = request.body.decode()
 
     result.save()
+    print("Report done")
+    print(request.body.decode())
     return HttpResponse(status=200)
 
 
