@@ -23,12 +23,15 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = "iamy!^p_7q_9v)c&u1v)nt0284-vzyp9(6+v%(gkkhofv_7j5!"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = True #lol
 
 ALLOWED_HOSTS = ["*"]
 
 CSRF_COOKIE_SECURE = False
 SESSION_COOKIE_SECURE = False
+
+# Gotta be able to delete all the tings
+DATA_UPLOAD_MAX_NUMBER_FIELDS = 10240 
 
 # Application definition
 
