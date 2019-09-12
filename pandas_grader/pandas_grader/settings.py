@@ -124,6 +124,6 @@ CONSTANCE_CONFIG = {
     "DOCKER_IMAGE": ("wwhuang/jhub-gofer:latest", "The grading environment"),
     "PARALLELISM": (200, "How many jobs to run in parallel"),
     "NAMESPACE": ("data100-staging", "The JupyterHub K8s namespace to run job"),
-    "ADDRESS": ("http://23ef40ea.ngrok.io", "Current server address"),
+    "ADDRESS": ("http://09a107ac.ngrok.io/", "Current server address"),
 }
 CONSTANCE_BACKEND = "constance.backends.database.DatabaseBackend"
