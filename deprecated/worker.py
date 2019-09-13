@@ -38,13 +38,13 @@ def main(api_url):
 
     try:
         with redirect_stdout(log_buffer), redirect_stderr(log_buffer):
-            fetched = requests.get(f"{api_url}api/ag/v1/fetch_job").json()
+            fetched = requests.get(f"{api_url}/api/ag/v1/fetch_job").json()
             if fetched["queue_empty"]:
                 logging.error("Request queue is empty, no work to do, quitting")
                 return 1
             print(fetched)
             skeleton_name = fetched["skeleton"]
-            skeleton_zip = requests.get(f"{api_url}api/ag/v1/skeleton/{skeleton_name}")
+            skeleton_zip = requests.get(f"{api_url}/api/ag/v1/skeleton/{skeleton_name}")
 
             os.makedirs(GRADING_DIR, exist_ok=True)
             with open(f"{GRADING_DIR}/{skeleton_name}.zip", "wb") as f:
@@ -104,7 +104,7 @@ def main(api_url):
     print(log_buffer.getvalue())
     print("Sending log to api/ag/v1/report_done")
 
-    report_done_endpoint = f"{api_url}api/ag/v1/report_done/{job_id}"
+    report_done_endpoint = f"{api_url}/api/ag/v1/report_done/{job_id}"
     resp = requests.post(report_done_endpoint, data=conv.convert(log_buffer.getvalue()))
     assert resp.status_code == 200
 
