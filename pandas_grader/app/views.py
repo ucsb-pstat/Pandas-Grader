@@ -69,7 +69,7 @@ def fetch_job(request):
         next_job = queued_jobs[0]
         next_job.dequeue()
         next_job.save()
-        print("fetch has job")
+        print("FETCH HAS JOB")
         print(next_job)
         j = {
                 "queue_empty": False,
