@@ -21,6 +21,7 @@ def _get_assignment(file_id):
 @require_POST
 @transaction.atomic
 def grade_batch(request: HttpRequest):
+    print('grade batch start')
     req_data = json.loads(request.body)
     access_token = req_data["access_token"]
     backup_ids = req_data["subm_ids"]
@@ -29,7 +30,7 @@ def grade_batch(request: HttpRequest):
     assignment = _get_assignment(assignment_key)
 
     add_k_workers(len(backup_ids))
-
+    
     # TODO(simon):
     # Address the issue of queue backpresssure:
     # specifically, okpy has a short retry period.
@@ -43,7 +44,9 @@ def grade_batch(request: HttpRequest):
         job.save()
 
         job_ids.append(job.job_id)
-
+    
+    print(job_ids) 
+    print("end grade batch")
     return JsonResponse({"jobs": job_ids})
 
 
