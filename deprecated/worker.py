@@ -90,9 +90,6 @@ def main(api_url):
                 "kind": "Total",
                 "message": okpy_result["msg"],
             }
-            print("SCORE CONTENT")
-            print(score_content)
-            print("END SCORE CONTENT")
             score_endpoint = (
                 f"https://okpy.org/api/v3/score/?access_token={access_token}"
             )

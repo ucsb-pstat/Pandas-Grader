@@ -27,8 +27,8 @@ def deploy_jobs(kwargs, namespace):
     rendered = tmpl.render(**kwargs)
     rendered_yml = yaml.safe_load(rendered)
 
-    job_api.create_namespaced_job(namespace, rendered_yml)
-
+    job_api_response = job_api.create_namespaced_job(namespace, rendered_yml)
+    print(job_api_response)
 
 raw_str = """
 apiVersion: batch/v1

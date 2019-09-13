@@ -26,6 +26,9 @@ def _get_assignment(file_id):
 def grade_batch(request: HttpRequest):
     """
     Pretty sure okpy hits this up when I submit an autograder job. 
+    I think what happens here is that I allocate an equal number of workers 
+    as the number of jobs (backupids). I believe only one backupd is submitted 
+    each time.  
     """
     print('GRADE BATCH START')
     ip, is_routable = get_client_ip(request)
@@ -39,6 +42,9 @@ def grade_batch(request: HttpRequest):
         print("Private IP")# The client's IP address is private
 
 
+    # The okpy server should be sending us the access token and backup id, which will 
+    # let us download assignments. Based on the assignment key, we also know which of the 
+    # uploaded assignments to use.
     req_data = json.loads(request.body)
     access_token = req_data["access_token"]
     backup_ids = req_data["subm_ids"]
@@ -46,8 +52,10 @@ def grade_batch(request: HttpRequest):
     assignment_key = req_data["assignment"]
     assignment = _get_assignment(assignment_key)
 
+    # Here we allocate kubernetes workers. 
     add_k_workers(len(backup_ids))
     
+    # I think the saving job stuff is just for the UI. 
     # TODO(simon):
     # Address the issue of queue backpresssure:
     # specifically, okpy has a short retry period.
@@ -63,7 +71,7 @@ def grade_batch(request: HttpRequest):
         job_ids.append(job.job_id)
     
     print(job_ids) 
-    print("end grade batch")
+    print("GRADE BATCH END")
     return JsonResponse({"jobs": job_ids})
 
 
