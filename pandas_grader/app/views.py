@@ -7,6 +7,9 @@ from .models import Assignment, GradingJob, JobStatusEnum, translate_okpy_status
 from django.db import transaction
 from .k8s import add_k_workers
 
+# Help with debugging
+from ipware import get_client_ip
+
 
 def index(request: HttpRequest):
     return redirect("admin:index")
@@ -21,7 +24,21 @@ def _get_assignment(file_id):
 @require_POST
 @transaction.atomic
 def grade_batch(request: HttpRequest):
-    print('grade batch start')
+    """
+    Pretty sure okpy hits this up when I submit an autograder job. 
+    """
+    print('GRADE BATCH START')
+    ip, is_routable = get_client_ip(request)
+    if ip is None:
+        print("Can't get ip") # Unable to get the client's IP address
+    else:
+        print("IP is " + str(ip)) # We got the client's IP address
+    if is_routable:
+        print("Public IP")# The client's IP address is publicly routable on the Internet
+    else:
+        print("Private IP")# The client's IP address is private
+
+
     req_data = json.loads(request.body)
     access_token = req_data["access_token"]
     backup_ids = req_data["subm_ids"]
