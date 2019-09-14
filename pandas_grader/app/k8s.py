@@ -29,7 +29,7 @@ def deploy_jobs(kwargs, namespace):
 
     job_api_response = job_api.create_namespaced_job(namespace, rendered_yml)
     print("Kube Job metadata")
-    print(job_api_response['metadata'])
+    print(job_api_response.metadata)
 
 raw_str = """
 apiVersion: batch/v1
