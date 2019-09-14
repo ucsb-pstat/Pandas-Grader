@@ -122,7 +122,7 @@ def get_file(request: HttpRequest, assignment_id):
 
 def add_kube_workers(request: HttpRequest, num_workers):
     add_k_workers(int(num_workers))
-    return "Workers Added"
+    return HttpResponse("Workers added you hack")
 
 
 @require_POST
