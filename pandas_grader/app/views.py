@@ -52,7 +52,11 @@ def grade_batch(request: HttpRequest):
     assignment_key = req_data["assignment"]
     assignment = _get_assignment(assignment_key)
 
+    print("Request data")
+    print(req_data)
+    
     # Here we allocate kubernetes workers. 
+    print("Allocate workers")
     add_k_workers(len(backup_ids))
     
     # I think the saving job stuff is just for the UI. 

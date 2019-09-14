@@ -181,7 +181,7 @@ async def grade_batch(request: Request):
             "name": f"pandas-grader-{job_id}",
             "parallelism": 1000,
             "num_jobs": len(job_ids),
-            "api_addr": "http://ed1c15e4.ngrok.io",
+            "api_addr": "http://grading.ds100.org:8080",
         },
     )
 

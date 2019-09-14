@@ -38,13 +38,19 @@ def main(api_url):
 
     try:
         with redirect_stdout(log_buffer), redirect_stderr(log_buffer):
-            fetched = requests.get(f"{api_url}/api/ag/v1/fetch_job").json()
+            print("Worker starting", file=sys.stderr)
+            print("api_url: " + str(api_url), file=sys.stderr)
+            r = requests.get(f"{api_url}api/ag/v1/fetch_job")
+            print("Request response: " + r.text, file=sys.stderr)
+            fetched = r.json()
+            print("fetched " + str(fetched), file=sys.stderr)
             if fetched["queue_empty"]:
+                print("Queue empty", file=sys.stderr)
                 logging.error("Request queue is empty, no work to do, quitting")
                 return 1
-            print(fetched)
+            
             skeleton_name = fetched["skeleton"]
-            skeleton_zip = requests.get(f"{api_url}/api/ag/v1/skeleton/{skeleton_name}")
+            skeleton_zip = requests.get(f"{api_url}api/ag/v1/skeleton/{skeleton_name}")
 
             os.makedirs(GRADING_DIR, exist_ok=True)
             with open(f"{GRADING_DIR}/{skeleton_name}.zip", "wb") as f:
@@ -96,12 +102,16 @@ def main(api_url):
             resp = requests.post(score_endpoint, json=score_content)
             assert resp.status_code == 200, resp.json()
     except Exception as e:
+        print("Things went wrong", file=sys.stderr)
+        print("Exception: " + str(e), file=sys.stderr)
+        print("Stack trace", file=sys.stderr)
+        print(traceback.format_exc(), file=sys.stderr)
         print(e)
 
     print(log_buffer.getvalue())
     print("Sending log to api/ag/v1/report_done")
 
-    report_done_endpoint = f"{api_url}/api/ag/v1/report_done/{job_id}"
+    report_done_endpoint = f"{api_url}api/ag/v1/report_done/{job_id}"
     resp = requests.post(report_done_endpoint, data=conv.convert(log_buffer.getvalue()))
     assert resp.status_code == 200
 
