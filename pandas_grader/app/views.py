@@ -30,17 +30,8 @@ def grade_batch(request: HttpRequest):
     as the number of jobs (backupids). I believe only one backupd is submitted 
     each time.  
     """
+    print("==============================")
     print('GRADE BATCH START')
-    ip, is_routable = get_client_ip(request)
-    if ip is None:
-        print("Can't get ip") # Unable to get the client's IP address
-    else:
-        print("IP is " + str(ip)) # We got the client's IP address
-    if is_routable:
-        print("Public IP")# The client's IP address is publicly routable on the Internet
-    else:
-        print("Private IP")# The client's IP address is private
-
 
     # The okpy server should be sending us the access token and backup id, which will 
     # let us download assignments. Based on the assignment key, we also know which of the 
@@ -76,6 +67,7 @@ def grade_batch(request: HttpRequest):
     
     print(job_ids) 
     print("GRADE BATCH END")
+    print("==============================")
     return JsonResponse({"jobs": job_ids})
 
 
@@ -139,7 +131,7 @@ def report_done(request: HttpRequest, job_id):
 
     result.save()
     print("Report done")
-    print(request.body.decode())
+    print(request.text)
     return HttpResponse(status=200)
 
 
