@@ -131,7 +131,7 @@ def report_done(request: HttpRequest, job_id):
 
     result.save()
     print("Report done")
-    print(request.body.decode())
+    #print(request.body.decode())
     return HttpResponse(status=200)
 
 
