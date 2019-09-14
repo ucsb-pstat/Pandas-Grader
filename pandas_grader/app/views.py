@@ -120,6 +120,10 @@ def get_file(request: HttpRequest, assignment_id):
     file = _get_assignment(assignment_id).file
     return FileResponse(file)
 
+def add_kube_workers(request: HttpRequest, num_workers):
+    add_k_workers(int(num_workers))
+    return "Workers Added"
+
 
 @require_POST
 def report_done(request: HttpRequest, job_id):
