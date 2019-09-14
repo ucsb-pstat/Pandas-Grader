@@ -32,15 +32,15 @@ def gofer_wrangle(res):
 @click.command()
 @click.option("--api-url", required=True)
 def main(api_url):
-
+    
     log_buffer = StringIO()
     conv = Ansi2HTMLConverter()
-
+    
     try:
         with redirect_stdout(log_buffer), redirect_stderr(log_buffer):
             print("Worker starting", file=sys.stderr)
             print("api_url: " + str(api_url), file=sys.stderr)
-            r = requests.get(f"{api_url}api/ag/v1/fetch_job")
+            r = requests.get(f"{api_url}/api/ag/v1/fetch_job")
             print("Request response: " + r.text, file=sys.stderr)
             fetched = r.json()
             print("fetched " + str(fetched), file=sys.stderr)
@@ -50,7 +50,7 @@ def main(api_url):
                 return 1
             
             skeleton_name = fetched["skeleton"]
-            skeleton_zip = requests.get(f"{api_url}api/ag/v1/skeleton/{skeleton_name}")
+            skeleton_zip = requests.get(f"{api_url}/api/ag/v1/skeleton/{skeleton_name}")
 
             os.makedirs(GRADING_DIR, exist_ok=True)
             with open(f"{GRADING_DIR}/{skeleton_name}.zip", "wb") as f:
@@ -64,10 +64,18 @@ def main(api_url):
             backup_id = fetched["backup_id"]
             job_id = fetched["job_id"]
             backup_assignment_url = f"https://okpy.org/api/v3/backups/{backup_id}?access_token={access_token}"
-            backup_json = requests.get(backup_assignment_url).json()
+            backup_response = requests.get(backup_assignment_url)
+            backup_json = backup_response.json()
             try:
                 file_dict = backup_json["data"]["messages"][0]["contents"]
             except Exception as e:
+                print("Something went wrong with getting the file dict", file=sys.stderr)
+                print("Backup Assignment URL", file=sys.stderr)
+                print(backup_assignment_url, file=sys.stderr)
+                print("Backup response:", file=sys.stderr)
+                print(backup_response.text, file=sys.stderr)
+                print("Backup json:", file=sys.stderr)
+                print(backup_json, file=sys.stderr)
                 print(e)
                 print(backup_json)
 
@@ -111,7 +119,7 @@ def main(api_url):
     print(log_buffer.getvalue())
     print("Sending log to api/ag/v1/report_done")
 
-    report_done_endpoint = f"{api_url}api/ag/v1/report_done/{job_id}"
+    report_done_endpoint = f"{api_url}/api/ag/v1/report_done/{job_id}"
     resp = requests.post(report_done_endpoint, data=conv.convert(log_buffer.getvalue()))
     assert resp.status_code == 200
 
