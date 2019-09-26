@@ -81,12 +81,31 @@ WSGI_APPLICATION = "pandas_grader.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
+"""
+# DB settings for sqlite3.
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
         "NAME": os.path.join(BASE_DIR, "db.sqlite3"),
     }
 }
+"""
+
+# DB Settings for postgres
+# Used instructions from:
+# https://www.digitalocean.com/community/tutorials/how-to-use-postgresql-with-your-django-application-on-ubuntu-14-04
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'DS100_AUTOGRADER_DB',
+        'USER': 'ds100',
+        'PASSWORD': 'safetyoff',
+        'HOST': 'localhost',
+        'PORT': '',
+    }
+}
+
+
 
 
 # Password validation
