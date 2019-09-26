@@ -125,9 +125,9 @@ def add_kube_workers(request: HttpRequest, num_workers):
     add_k_workers(int(num_workers))
     return HttpResponse("Workers added you hack")
 
-def requeue_jobs(request):
+def requeue_jobs(request, access_token):
     # Hacky solution to reque running jobs 
-    query = GradingJob.objects.filter(status=JobStatusEnum.RUNNING)
+    query = GradingJob.objects.filter(status=JobStatusEnum.RUNNING, access_token=access_token)
     for q in query:
         q.requeue()
         q.save()
