@@ -121,8 +121,17 @@ def get_file(request: HttpRequest, assignment_id):
     return FileResponse(file)
 
 def add_kube_workers(request: HttpRequest, num_workers):
+    # Hacky solution to spin up more workers to pick up orphaned task
     add_k_workers(int(num_workers))
     return HttpResponse("Workers added you hack")
+
+def requeue_jobs(request):
+    # Hacky solution to reque running jobs 
+    query = GradingJob.objects.filter(status=JobStatusEnum.running)
+    for q in query:
+        q.requeue()
+        q.save()
+    return HttpResponse("Running jobs requeued")
 
 
 @require_POST

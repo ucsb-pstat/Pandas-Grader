@@ -73,6 +73,10 @@ class GradingJob(models.Model):
         self.dequeue_time = timezone.now()
         self.status = JobStatusEnum.RUNNING
 
+    def requeue(self):
+        self.dequeue_time = models.DateTimeField(null=True)
+        self.status = JobStatusEnum.QUEUED
+
     def done(self):
         self.finish_time = timezone.now()
         self.status = JobStatusEnum.DONE
