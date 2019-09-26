@@ -127,7 +127,7 @@ def add_kube_workers(request: HttpRequest, num_workers):
 
 def requeue_jobs(request):
     # Hacky solution to reque running jobs 
-    query = GradingJob.objects.filter(status=JobStatusEnum.running)
+    query = GradingJob.objects.filter(status=JobStatusEnum.RUNNING)
     for q in query:
         q.requeue()
         q.save()
