@@ -85,8 +85,12 @@ WSGI_APPLICATION = "pandas_grader.wsgi.application"
 # DB settings for sqlite3.
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": os.path.join(BASE_DIR, "db.sqlite3"),
+        "ENGINE": "django.db.backends.postgresql_psycopg2",
+        'NAME': 'ds100_autograder_db',
+        'USER': 'ds100',
+        'PASSWORD': 'safetyoff',
+        'HOST': 'localhost',
+        'PORT': '',
     }
 }
 

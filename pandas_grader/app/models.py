@@ -50,12 +50,12 @@ class GradingJob(models.Model):
 
     # constructor fields
     assignment = models.ForeignKey(Assignment, on_delete=models.DO_NOTHING)
-    backup_id = models.CharField(max_length=10)
+    backup_id = models.CharField(max_length=255)
     access_token = models.CharField(max_length=50)
 
     # automatic metadata
     status = models.CharField(
-        max_length=10,
+        max_length=255,
         choices=[(tag, tag.value) for tag in JobStatusEnum],
         default=JobStatusEnum.QUEUED,
     )

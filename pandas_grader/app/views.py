@@ -39,6 +39,7 @@ def grade_batch(request: HttpRequest):
     req_data = json.loads(request.body)
     access_token = req_data["access_token"]
     backup_ids = req_data["subm_ids"]
+    print(backup_ids)
 
     assignment_key = req_data["assignment"]
     assignment = _get_assignment(assignment_key)
@@ -58,6 +59,8 @@ def grade_batch(request: HttpRequest):
     # to avoid creating another task
     job_ids = []
     for backup_id in backup_ids:
+        print("Lenths:")
+        print(len(backup_id), backup_id)
         job = GradingJob(
             assignment=assignment, backup_id=backup_id, access_token=access_token
         )
