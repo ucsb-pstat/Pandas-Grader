@@ -1,8 +1,2 @@
-git+https://github.com/simon-mo/Gofer-Grader.git@plain_text_repr
-requests
+git+https://github.com/ucsb-pstat/Gofer-Grader.git@local-grader
 click
-ipython
-bs4
-lxml
-nltk
-wordcloud
