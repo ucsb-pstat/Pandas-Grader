@@ -1,2 +1,2 @@
-git+https://github.com/ucsb-pstat/Gofer-Grader.git@local-grader
+git+https://github.com/ucsb-pstat/Gofer-Grader.git
 click

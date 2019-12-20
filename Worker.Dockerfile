@@ -1,4 +1,6 @@
-FROM ucsb/pstat-134:v191012
+FROM ucsb/pstat-134:v191121
+
+USER $NB_UID
 
 COPY worker.py worker-requirements.txt ./
 
